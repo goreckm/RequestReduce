@@ -1,14 +1,13 @@
 ﻿using System;
 using RequestReduce.Configuration;
+using RequestReduce.Reducer;
 
 namespace RequestReduce.Utilities
 {
     public interface IUriBuilder
     {
-        string BuildCssUrl(Guid key, byte[] bytes);
-        string BuildCssUrl(Guid key, string signature);
-        string BuildJavaScriptUrl(Guid key, byte[] bytes);
-        string BuildJavaScriptUrl(Guid key, string signature);
+        string BuildResourceUrl(Guid key, byte[] bytes, ResourceType resourceType);
+        string BuildResourceUrl(Guid key, string signature, ResourceType resourceType);
         string BuildSpriteUrl(Guid key, byte[] bytes);
         string ParseFileName(string url);
         Guid ParseKey(string url);
@@ -26,24 +25,22 @@ namespace RequestReduce.Utilities
             this.configuration = configuration;
         }
 
-        public string BuildCssUrl(Guid key, byte[] bytes)
+        public string BuildResourceUrl(Guid key, byte[] bytes, ResourceType resourceType)
         {
-            return BuildCssUrl(key, Hasher.Hash(bytes).RemoveDashes());
+            return BuildResourceUrl(key, Hasher.Hash(bytes).RemoveDashes(), resourceType);
         }
 
-        public string BuildCssUrl(Guid key, string signature)
+        public string BuildResourceUrl(Guid key, string signature, ResourceType resourceType)
         {
-            return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, CssFileName);
-        }
-
-        public string BuildJavaScriptUrl(Guid key, byte[] bytes)
-        {
-            return BuildJavaScriptUrl(key, Hasher.Hash(bytes).RemoveDashes());
-        }
-
-        public string BuildJavaScriptUrl(Guid key, string signature)
-        {
-            return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, JsFileName);
+            switch (resourceType)
+            {
+                case ResourceType.Css:
+                    return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, CssFileName);
+                case ResourceType.JavaScript:
+                    return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, JsFileName);
+                default:
+                    throw new ArgumentException("Cannot Build Url for Resources of unknown type", "resourceType");
+            }
         }
 
         public string BuildSpriteUrl(Guid key, byte[] bytes)

@@ -7,6 +7,7 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using Xunit;
+using RequestReduce.Reducer;
 
 namespace RequestReduce.Facts.Store
 {
@@ -106,7 +107,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id, new byte[] { 1 }),
+                    FileName = builder.BuildResourceUrl(id, new byte[] { 1 }, ResourceType.Css),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -123,7 +124,7 @@ namespace RequestReduce.Facts.Store
                 var file3 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id2, new byte[] { 3 }),
+                    FileName = builder.BuildResourceUrl(id2, new byte[] { 3 }, ResourceType.Css),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
@@ -150,7 +151,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id, new byte[] { 1 }),
+                    FileName = builder.BuildResourceUrl(id, new byte[] { 1 }, ResourceType.Css),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -160,7 +161,7 @@ namespace RequestReduce.Facts.Store
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id2, new byte[] { 2 }),
+                    FileName = builder.BuildResourceUrl(id2, new byte[] { 2 }, ResourceType.Css),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
@@ -185,7 +186,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id, new byte[] { 1 }),
+                    FileName = builder.BuildResourceUrl(id, new byte[] { 1 }, ResourceType.Css),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -195,7 +196,7 @@ namespace RequestReduce.Facts.Store
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id, new byte[] { 2 }),
+                    FileName = builder.BuildResourceUrl(id, new byte[] { 2 }, ResourceType.Css),
                     Key = id,
                     LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 2)),
                     OriginalName = "originalName2",
@@ -204,7 +205,7 @@ namespace RequestReduce.Facts.Store
                 var file3 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id, new byte[] { 3 }),
+                    FileName = builder.BuildResourceUrl(id, new byte[] { 3 }, ResourceType.Css),
                     Key = id,
                     LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 3)),
                     OriginalName = "originalName2",
@@ -213,7 +214,7 @@ namespace RequestReduce.Facts.Store
                 var file4 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildCssUrl(id, new byte[] { 4 }),
+                    FileName = builder.BuildResourceUrl(id, new byte[] { 4 }, ResourceType.Css),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",

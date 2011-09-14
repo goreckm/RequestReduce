@@ -3,6 +3,7 @@ using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Reducer;
 
 namespace RequestReduce.Facts.Utilities
 {
@@ -16,10 +17,10 @@ namespace RequestReduce.Facts.Utilities
             }
         }
 
-        public class BuildCssUrl
+        public class BuildUrl
         {
             [Fact]
-            public void WillCreateCorrectUrl()
+            public void WillCreateCorrectCssUrl()
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
@@ -27,13 +28,13 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = new byte[] {1};
 
-                var result = testable.ClassUnderTest.BuildCssUrl(guid, content);
+                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.Css);
 
                 Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), UriBuilder.CssFileName), result);
             }
 
             [Fact]
-            public void WillCreateCorrectUrlFromString()
+            public void WillCreateCorrectCssUrlFromString()
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
@@ -41,18 +42,13 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
-                var result = testable.ClassUnderTest.BuildCssUrl(guid, content);
+                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.Css);
 
                 Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, UriBuilder.CssFileName), result);
             }
 
-        }
-
-
-        public class BuildJavaScriptUrl
-        {
             [Fact]
-            public void WillCreateCorrectUrl()
+            public void WillCreateCorrectJavascriptUrl()
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
@@ -60,13 +56,13 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = new byte[] { 1 };
 
-                var result = testable.ClassUnderTest.BuildJavaScriptUrl(guid, content);
+                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.JavaScript);
 
                 Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), UriBuilder.JsFileName), result);
             }
 
             [Fact]
-            public void WillCreateCorrectUrlFromString()
+            public void WillCreateCorrectJavaScriptUrlFromString()
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
@@ -74,11 +70,24 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
-                var result = testable.ClassUnderTest.BuildJavaScriptUrl(guid, content);
+                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.JavaScript);
 
                 Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, UriBuilder.JsFileName), result);
             }
 
+            [Fact]
+            public void WillThrowArgumentExceptionIfResourceTypeIsUnknown()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = "abc";
+
+                var result = Record.Exception(() => testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.Unknown)) as ArgumentException;
+
+                Assert.NotNull(result);
+            }
         }
 
         public class BuildSpriteUrl

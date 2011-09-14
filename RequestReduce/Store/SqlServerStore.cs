@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RequestReduce.Module;
 using RequestReduce.Utilities;
+using RequestReduce.Reducer;
 
 namespace RequestReduce.Store
 {
@@ -96,7 +97,7 @@ namespace RequestReduce.Store
         {
             RRTracer.Trace("SqlServerStore Looking for previously saved content.");
             var files = repository.GetActiveCssFiles();
-            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file)));
+            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file), ResourceType.Css));
         }
 
 

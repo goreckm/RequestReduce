@@ -18,7 +18,7 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableCssReducer()
             {
-                Mock<IMinifier>().Setup(x => x.MinifyCss(It.IsAny<string>())).Returns("minified");
+                Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>(), ResourceType.Css)).Returns("minified");
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
@@ -113,7 +113,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableCssReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadCssString("http://host/css1.css")).Returns("css1");
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadCssString("http://host/css2.css")).Returns("css2");
-                testable.Mock<IMinifier>().Setup(x => x.MinifyCss("css1css2")).Returns("min");
+                testable.Mock<IMinifier>().Setup(x => x.Minify("css1css2", ResourceType.Css)).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 

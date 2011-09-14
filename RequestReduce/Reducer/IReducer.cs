@@ -8,6 +8,5 @@ namespace RequestReduce.Reducer
         ResourceType SupportedResourceType { get; }
         string Process(Guid key, string urls);
         string Process(string urls);
-
     }
 }

@@ -1,8 +1,8 @@
-﻿namespace RequestReduce.Utilities
+﻿using RequestReduce.Reducer;
+namespace RequestReduce.Utilities
 {
     public interface IMinifier
     {
-        string MinifyCss(string unMinifiedContent);
-        string MinifyJavaScript(string unMinifiedContent);
+        string Minify(string unMinifiedContent, ResourceType resourceType);
     }
 }

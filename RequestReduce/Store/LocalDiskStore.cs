@@ -7,6 +7,7 @@ using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Utilities;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Reducer;
 
 namespace RequestReduce.Store
 {
@@ -60,7 +61,7 @@ namespace RequestReduce.Store
                 if (e.ChangeType == WatcherChangeTypes.Deleted)
                     reductionRepository.RemoveReduction(guid);
                 if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed))
-                    reductionRepository.AddReduction(guid, uriBuilder.BuildCssUrl(guid, contentSignature));
+                    reductionRepository.AddReduction(guid, uriBuilder.BuildResourceUrl(guid, contentSignature, ResourceType.Css));
             }
         }
 
@@ -110,7 +111,7 @@ namespace RequestReduce.Store
 				where !files.FileName.Contains("-Expired-") 
 				group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) into filegroup 
 				join files2 in activeFiles on new { k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate) } equals new { k = uriBuilder.ParseKey(files2.FileName.Replace("\\", "/")), u = files2.CreatedDate } select files2.FileName)
-				.ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/"))));
+                .ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/")), ResourceType.Css));
         }
 
         public void Flush(Guid keyGuid)

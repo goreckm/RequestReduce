@@ -18,7 +18,7 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableJavaScriptReducer()
             {
-                Mock<IMinifier>().Setup(x => x.MinifyJavaScript(It.IsAny<string>())).Returns("minified");
+                Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>(), ResourceType.JavaScript)).Returns("minified");
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
@@ -103,7 +103,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableJavaScriptReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadJavaScriptString("http://host/js1.js")).Returns("js1");
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadJavaScriptString("http://host/js1.js")).Returns("js2");
-                testable.Mock<IMinifier>().Setup(x => x.MinifyJavaScript("js1\njs2")).Returns("min");
+                testable.Mock<IMinifier>().Setup(x => x.Minify("js1\njs2", ResourceType.JavaScript)).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 

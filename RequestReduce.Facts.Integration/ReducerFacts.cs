@@ -26,12 +26,12 @@ namespace RequestReduce.Facts.Integration
 
         private static IReducer GetCssReducer()
         {
-            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == Module.ResourceType.Css);
+            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == ResourceType.Css);
         }
 
         private static IReducer GetJavaScriptReducer()
         {
-            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == Module.ResourceType.JavaScript);
+            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == ResourceType.JavaScript);
         }
 
 

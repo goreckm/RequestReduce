@@ -78,7 +78,7 @@ namespace RequestReduce.Facts.Module
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
-                var transformed = @"<head id=""Head1""><script src=""http://server/Me3.js"" type=""text/javascript"" ></script><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
 <meta name=""description"" content="""" />
 
 

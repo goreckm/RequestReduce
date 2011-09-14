@@ -18,7 +18,7 @@ namespace RequestReduce.Utilities
     {
         private readonly IRRConfiguration configuration;
         public const string CssFileName = "RequestReducedStyle.css";
-        public const string JsFileName = "RequestReducedStyle.js";
+        public const string JsFileName = "RequestReducedScript.js";
 
         public UriBuilder(IRRConfiguration configuration)
         {

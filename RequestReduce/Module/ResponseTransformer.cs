@@ -31,8 +31,8 @@ namespace RequestReduce.Module
 
         public string Transform(string preTransform)
         {
-            preTransform = Transform(preTransform, CssPattern, cssFormat, reducingQueue.EnqueueCss);
             preTransform = Transform(preTransform, ScriptPattern, scriptFormat, reducingQueue.EnqueueJavaScript);
+            preTransform = Transform(preTransform, CssPattern, cssFormat, reducingQueue.EnqueueCss);
 
             return preTransform;
         }

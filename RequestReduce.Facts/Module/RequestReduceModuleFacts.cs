@@ -245,6 +245,7 @@ namespace RequestReduce.Facts.Module
         [Theory]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/sprite1.png", "image/png", true)]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", "text/css", true)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedScript.js", "application/x-javascript", true)]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", null, false)]
         public void WillCorrectlySetContentType(string path, string contentType, bool contentInStore)
         {

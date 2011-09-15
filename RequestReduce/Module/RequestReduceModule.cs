@@ -73,6 +73,8 @@ namespace RequestReduce.Module
                     httpContextWrapper.Response.StatusCode = 304;
                 else if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
                     httpContextWrapper.Response.ContentType = "text/css";
+                else if (url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+                    httpContextWrapper.Response.ContentType = "application/x-javascript";
                 else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                     httpContextWrapper.Response.ContentType = "image/png";
                 if (httpContextWrapper.ApplicationInstance != null)

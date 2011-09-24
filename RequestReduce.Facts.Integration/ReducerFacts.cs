@@ -6,9 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
-using RequestReduce.Utilities.Quantizer;
+using nQuant;
 using Xunit;
 
 namespace RequestReduce.Facts.Integration

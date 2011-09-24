@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -38,6 +39,7 @@ namespace RequestReduce.Facts.Module
             [Fact]
             public void WillGetPreviouslySavedEntriesFromStore()
             {
+                RRContainer.Current = null;
                 var testable = new TestableReductionRepository();
                 var key = Hasher.Hash("url1");
                 var mockStore = new Mock<IStore>();

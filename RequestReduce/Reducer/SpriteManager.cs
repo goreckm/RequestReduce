@@ -27,7 +27,7 @@ namespace RequestReduce.Reducer
             this.store = store;
             this.pngOptimizer = pngOptimizer;
             this.config = config;
-            SpriteContainer = new SpriteContainer(webClientWrapper);
+            SpriteContainer = new SpriteContainer(webClientWrapper, config);
         }
 
         public virtual void Add(BackgroundImageClass image)
@@ -37,7 +37,7 @@ namespace RequestReduce.Reducer
                 return;
             var spritedImage = SpriteContainer.AddImage(image);
             spriteList.Add(imageKey, spritedImage);
-            if (SpriteContainer.Size >= config.SpriteSizeLimit || SpriteContainer.Colors >= config.SpriteColorLimit)
+            if (SpriteContainer.Size >= config.SpriteSizeLimit || (SpriteContainer.Colors >= config.SpriteColorLimit && !config.ImageQuantizationDisabled && !config.ImageOptimizationDisabled))
                 Flush();
         }
 
@@ -58,7 +58,7 @@ namespace RequestReduce.Reducer
                     byte[] optBytes = null;
                     try
                     {
-                        optBytes = config.ImageOptimizationDisabled ? bytes : pngOptimizer.OptimizePng(bytes, config.ImageOptimizationCompressionLevel, config.ImageQuantizationDisabled);
+                        optBytes = (config.ImageOptimizationDisabled || !config.IsFullTrust) ? bytes : pngOptimizer.OptimizePng(bytes, config.ImageOptimizationCompressionLevel, config.ImageQuantizationDisabled);
                     }
                     catch (OptimizationException optEx)
                     {
@@ -74,7 +74,7 @@ namespace RequestReduce.Reducer
                 }
             }
             SpriteContainer.Dispose();
-            SpriteContainer = new SpriteContainer(webClientWrapper);
+            SpriteContainer = new SpriteContainer(webClientWrapper, config);
             return;
         }
 

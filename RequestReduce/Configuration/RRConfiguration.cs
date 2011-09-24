@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Web;
 
 namespace RequestReduce.Configuration
 {
@@ -27,6 +28,7 @@ namespace RequestReduce.Configuration
         bool ImageQuantizationDisabled { get; set; }
         int SpriteColorLimit { get; set; }
         int StorePollInterval { get; set; }
+        bool IsFullTrust { get; }
         event Action PhysicalPathChange; 
     }
 
@@ -47,7 +49,8 @@ namespace RequestReduce.Configuration
 
         public RRConfiguration()
         {
-            AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
+            IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
+            AuthorizedUserList = config == null || string.IsNullOrWhiteSpace(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
             val = config == null ? 0 : config.SpriteColorLimit;
@@ -59,7 +62,9 @@ namespace RequestReduce.Configuration
             CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
             ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
-            SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath) ? "/RequestReduceContent" : config.SpriteVirtualPath;
+            SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath)
+                                    ? GetAbsolutePath("~/RequestReduceContent")
+                                    : GetAbsolutePath(config.SpriteVirtualPath);
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
@@ -68,6 +73,14 @@ namespace RequestReduce.Configuration
                     throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore));
             }
             CreatePhysicalPath();
+        }
+
+        private string GetAbsolutePath(string spriteVirtualPath)
+        {
+            if (HttpContext.Current != null)
+                return VirtualPathUtility.ToAbsolute(spriteVirtualPath);
+            else
+                return spriteVirtualPath.Replace("~", "");
         }
 
         public int SpriteColorLimit { get; set; }
@@ -112,7 +125,7 @@ namespace RequestReduce.Configuration
 
         public int SpriteSizeLimit { get; set; }
         public int ImageOptimizationCompressionLevel { get; set; }
-
+        public bool IsFullTrust { get; private set; }
         private void CreatePhysicalPath()
         {
             if (!string.IsNullOrEmpty(spritePhysicalPath) && !Directory.Exists(spritePhysicalPath))
@@ -122,6 +135,35 @@ namespace RequestReduce.Configuration
                     Thread.Sleep(0);
             }
         }
+
+        // Based on 
+        // http://blogs.msdn.com/b/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx
+        public static AspNetHostingPermissionLevel GetCurrentTrustLevel()
+        {
+            foreach (AspNetHostingPermissionLevel trustLevel in
+                    new AspNetHostingPermissionLevel[] {
+                    AspNetHostingPermissionLevel.Unrestricted,
+                    AspNetHostingPermissionLevel.High,
+                    AspNetHostingPermissionLevel.Medium,
+                    AspNetHostingPermissionLevel.Low,
+                    AspNetHostingPermissionLevel.Minimal 
+                })
+            {
+                try
+                {
+                    new AspNetHostingPermission(trustLevel).Demand();
+                }
+                catch (System.Security.SecurityException)
+                {
+                    continue;
+                }
+
+                return trustLevel;
+            }
+
+            return AspNetHostingPermissionLevel.None;
+        }
+
     }
 
     public static class ConfigExtensions

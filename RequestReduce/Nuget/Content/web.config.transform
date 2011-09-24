@@ -1,6 +1,6 @@
 ﻿<configuration>
   <configSections>
-    <section name="RequestReduce" type="RequestReduce.Configuration.RequestReduceConfigSection, RequestReduce"/>
+    <section name="RequestReduce" type="RequestReduce.Configuration.RequestReduceConfigSection, RequestReduce" requirePermission="false" />
   </configSections>
   <system.web>
     <httpModules>
@@ -8,6 +8,7 @@
     </httpModules>
   </system.web>
   <system.webServer>
+    <validation validateIntegratedModeConfiguration="false"/>
 		<modules runAllManagedModulesForAllRequests="true">
       <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce"/>
 		</modules>

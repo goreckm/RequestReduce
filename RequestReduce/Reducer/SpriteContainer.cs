@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using RequestReduce.Utilities;
+using RequestReduce.Configuration;
 
 namespace RequestReduce.Reducer
 {
@@ -14,11 +15,13 @@ namespace RequestReduce.Reducer
     {
         protected readonly IList<SpritedImage> images = new List<SpritedImage>();
         private readonly IWebClientWrapper webClientWrapper;
+        private readonly IRRConfiguration rrConfiguration;
         private readonly HashSet<int> uniqueColors = new HashSet<int>();
 
-        public SpriteContainer(IWebClientWrapper webClientWrapper)
+        public SpriteContainer(IWebClientWrapper webClientWrapper, IRRConfiguration rrConfiguration)
         {
             this.webClientWrapper = webClientWrapper;
+            this.rrConfiguration = rrConfiguration;
         }
 
         public SpritedImage AddImage (BackgroundImageClass image)
@@ -49,13 +52,14 @@ namespace RequestReduce.Reducer
                         Size += imageBytes.Length;
                 }
             }
-            var avgColor = GetColors(bitmap);
+            var avgColor = rrConfiguration.IsFullTrust ? GetColors(bitmap) : 0;
             var spritedImage = new SpritedImage(avgColor, image, bitmap);
             images.Add(spritedImage);
             Width += bitmap.Width + 1;
             if (Height < bitmap.Height) Height = bitmap.Height;
             return spritedImage;
         }
+
 
         private int GetColors(Bitmap bitmap)
         {

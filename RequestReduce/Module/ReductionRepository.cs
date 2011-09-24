@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
@@ -35,6 +36,7 @@ namespace RequestReduce.Module
         {
             try
             {
+                RRTracer.Trace("Entering LoadDictionaryWithExistingItems");
                 var store = RRContainer.Current.GetInstance<IStore>();
                 if (store == null)
                     return;
@@ -75,7 +77,7 @@ namespace RequestReduce.Module
             {
                 lock(lockObject)
                 {
-                    dictionary.Add(key, reducedUrl);
+                    dictionary[key] = reducedUrl;
                     RRTracer.Trace("Reduction {0} added to ReductionRepository Dictionary.", key);
                 }
             }

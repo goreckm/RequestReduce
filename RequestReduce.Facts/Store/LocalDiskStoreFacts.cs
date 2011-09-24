@@ -29,6 +29,11 @@ namespace RequestReduce.Facts.Store
                 return;
             }
 
+            public IReductionRepository ReductionRepository
+            {
+                set { reductionRepository = value; }
+            }
+
         }
 
         class TestableLocalDiskStore : Testable<FakeLocalDiskStore>
@@ -92,6 +97,55 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
 
                 testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("c:\\web\\url\\myid-Expired-style.cc"));
+            }
+
+            [Fact]
+            public void WillAddToReductionRepository()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
+                var expectedKey = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("/url/myid-style.cc")).Returns(expectedKey);
+
+                testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
+
+                testable.Mock<IReductionRepository>().Verify(x => x.AddReduction(expectedKey, "/url/myid-style.cc"), Times.Once());
+            }
+
+            [Fact]
+            public void WillNotAddToReductionRepositoryIfPng()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.png")).Returns("style");
+                var expectedKey = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("/url/myid-style.png")).Returns(expectedKey);
+
+                testable.ClassUnderTest.Save(content, "/url/myid-style.png", null);
+
+                testable.Mock<IReductionRepository>().Verify(x => x.AddReduction(expectedKey, "/url/myid-style.png"), Times.Never());
+            }
+
+            [Fact]
+            public void WillNotAddToReductionRepositoryIfItINull()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
+                var expectedKey = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("/url/myid-style.cc")).Returns(expectedKey);
+                testable.ClassUnderTest.ReductionRepository = null;
+
+                testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
+
+                testable.Mock<IReductionRepository>().Verify(x => x.AddReduction(expectedKey, "/url/myid-style.cc"), Times.Never());
             }
         }
 

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using RequestReduce.Utilities;
 using System;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Module
 {
@@ -14,11 +15,7 @@ namespace RequestReduce.Module
     public class ResponseTransformer : IResponseTransformer
     {
         private readonly IReductionRepository reductionRepository;
-        private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex ScriptPattern = new Regex(@"<script[^>]+src=['""]?.*?['""]?[^>]+>\s*?(</script>)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex UrlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly string cssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
-        private static readonly string scriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
         private readonly IReducingQueue reducingQueue;
         private readonly HttpContextBase context;
 
@@ -31,15 +28,16 @@ namespace RequestReduce.Module
 
         public string Transform(string preTransform)
         {
-            preTransform = Transform(preTransform, ScriptPattern, scriptFormat, reducingQueue.EnqueueJavaScript);
-            preTransform = Transform(preTransform, CssPattern, cssFormat, reducingQueue.EnqueueCss);
+            preTransform = Transform<JavaScriptResource>(preTransform);
+            preTransform = Transform<CssResource>(preTransform);
 
             return preTransform;
         }
 
-        private string Transform(string preTransform, Regex markupPattern, string markupFormat, Action<string> enqueueFunc)
+        private string Transform<T>(string preTransform) where T : IResourceType, new()
         {
-            var matches = markupPattern.Matches(preTransform);
+            var resource = new T();
+            var matches = resource.ResourceRegex.Matches(preTransform);
             if (matches.Count > 0)
             {
                 var urls = new StringBuilder();
@@ -58,12 +56,12 @@ namespace RequestReduce.Module
                 {
                     RRTracer.Trace("Reduction found for {0}", urls);
                     var closeHeadIdx = preTransform.IndexOf('>');
-                    preTransform = preTransform.Insert(closeHeadIdx + 1, string.Format(markupFormat, transform));
+                    preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
                     foreach (var match in matches)
                         preTransform = preTransform.Replace(match.ToString(), "");
                     return preTransform;
                 }
-                enqueueFunc(urls.ToString());
+                reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
                 RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
             }
             return preTransform;

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Ajax.Utilities;
 using RequestReduce.Reducer;
 using System;
+using System.Security.AccessControl;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Utilities
 {
@@ -8,17 +10,14 @@ namespace RequestReduce.Utilities
     {
         private Microsoft.Ajax.Utilities.Minifier minifier = new Microsoft.Ajax.Utilities.Minifier();
 
-        public string Minify(string unMinifiedContent, ResourceType resourceType)
+        public string Minify<T>(string unMinifiedContent) where T : IResourceType
         {
-            switch (resourceType)
-            {
-                case ResourceType.Css:
-                    return minifier.MinifyStyleSheet(unMinifiedContent);
-                case ResourceType.JavaScript:
-                    return minifier.MinifyJavaScript(unMinifiedContent);
-                default:
-                    throw new ArgumentException("Cannot Minify Resources of unknown type", "resourceType");
-            }
+            if(typeof(T) is CssResource)
+                return minifier.MinifyStyleSheet(unMinifiedContent);
+            if(typeof(T) is JavaScriptResource)
+                return minifier.MinifyJavaScript(unMinifiedContent);
+
+            throw new ArgumentException("Cannot Minify Resources of unknown type", "resourceType");
         }
 
     }

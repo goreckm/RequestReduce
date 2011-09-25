@@ -14,7 +14,7 @@ namespace RequestReduce.Module
     {
         protected readonly IReductionRepository reductionRepository;
         protected readonly IStore store;
-        protected ConcurrentQueue<QueueItem> queue = new ConcurrentQueue<QueueItem>();
+        protected ConcurrentQueue<IQueueItem> queue = new ConcurrentQueue<IQueueItem>();
         protected Thread backgroundThread;
         protected bool isRunning = true;
         protected Action<Exception> CaptureErrorAction;
@@ -30,16 +30,10 @@ namespace RequestReduce.Module
             backgroundThread.Start();
         }
 
-        public void EnqueueCss(string urls)
+        public void Enqueue(IQueueItem item)
         {
-            queue.Enqueue(new QueueItem{ Urls = urls, Type = ResourceType.Css});
+            queue.Enqueue(item);
         }
-
-        public void EnqueueJavaScript(string urls)
-        {
-            queue.Enqueue(new QueueItem { Urls = urls, Type = ResourceType.JavaScript });
-        }
-
 
         public void ClearFailures()
         {
@@ -64,7 +58,7 @@ namespace RequestReduce.Module
         protected void ProcessQueuedItem()
         {
             var key = Guid.Empty;
-            QueueItem itemToReduce = null;
+            IQueueItem itemToReduce = null;
             if (!reductionRepository.HasLoadedSavedEntries)
                 return;
             try
@@ -73,7 +67,7 @@ namespace RequestReduce.Module
                 {
                     key = Hasher.Hash(itemToReduce.Urls);
                     RRTracer.Trace("dequeued and processing {0} with key {1}.", itemToReduce.Urls, key);
-                    var url = store.GetUrlByKey(key);
+                    var url = store.GetUrlByKey(key, itemToReduce.ResourceType);
                     if (url != null)
                     {
                         RRTracer.Trace("found url {0} in store for key {1}", url, key);
@@ -86,8 +80,7 @@ namespace RequestReduce.Module
                             RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", itemToReduce.Urls);
                             return;
                         }
-                        var reducer = RRContainer.Current.GetAllInstances<IReducer>()
-                                        .SingleOrDefault(x => x.SupportedResourceType == itemToReduce.Type);
+                        var reducer = RRContainer.Current.GetAllInstances<IReducer>().SingleOrDefault(x => x.SupportedResourceType == itemToReduce.ResourceType);
                         reducer.Process(key, itemToReduce.Urls);
                     }
                     RRTracer.Trace("dequeued and processed {0}.", itemToReduce.Urls);

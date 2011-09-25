@@ -4,13 +4,12 @@ using System.Text;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.Module;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Reducer
 {
-    public class JavaScriptReducer : HeadResourceReducerBase
+    public class JavaScriptReducer : HeadResourceReducerBase<JavaScriptResource>
     {
-        public override ResourceType SupportedResourceType { get { return ResourceType.JavaScript; } }
-
         public JavaScriptReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder) : base(webClientWrapper, store, minifier, uriBuilder)
         {
         }
@@ -25,7 +24,7 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessJavaScript(string url)
         {
-            var jsContent = webClientWrapper.DownloadJavaScriptString(url);
+            var jsContent = webClientWrapper.DownloadString<JavaScriptResource>(url);
             return jsContent;
         }
     }

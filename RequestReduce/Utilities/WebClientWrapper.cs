@@ -4,27 +4,22 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Utilities
 {
     public interface IWebClientWrapper
     {
-        string DownloadCssString(string url);
-        string DownloadJavaScriptString(string url);
+        string DownloadString<T>(string url) where T : IResourceType, new();
         string DownloadString(string url);
         byte[] DownloadBytes(string url);
     }
 
     public class WebClientWrapper : IWebClientWrapper
     {
-        public string DownloadJavaScriptString(string url)
+        public string DownloadString<T>(string url) where T : IResourceType, new()
         {
-            return DownloadString(url, new []{ "text/javascript", "application/javascript", "application/x-javascript" });
-        }
-
-        public string DownloadCssString(string url)
-        {
-            return DownloadString(url, new[]{"text/css"});
+            return DownloadString(url, new T().SupportedMimeTypes);
         }
 
         public string DownloadString(string url)

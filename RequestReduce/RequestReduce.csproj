@@ -64,10 +64,12 @@
     <Compile Include="IOC\RRHybridLifecycle.cs" />
     <Compile Include="IOC\SingletonConvention.cs" />
     <Compile Include="Module\AbstractFilter.cs" />
+    <Compile Include="Module\IQueueItem.cs" />
     <Compile Include="Module\IReductionRepository.cs" />
     <Compile Include="Module\QueueItem.cs" />
     <Compile Include="Module\ReductionRepository.cs" />
-    <Compile Include="Reducer\ResourceType.cs" />
+    <Compile Include="ResourceTypes\CssResource.cs" />
+    <Compile Include="ResourceTypes\IResourceType.cs" />
     <Compile Include="Module\ResponseTransformer.cs" />
     <Compile Include="Configuration\RRConfiguration.cs" />
     <Compile Include="Reducer\BackgroundImageClass.cs" />
@@ -76,6 +78,7 @@
     <Compile Include="Reducer\ICssImageTransformer.cs" />
     <Compile Include="Reducer\HeadResourceReducerBase.cs" />
     <Compile Include="Reducer\SpritedImage.cs" />
+    <Compile Include="ResourceTypes\JavaScriptResource.cs" />
     <Compile Include="RRTracer.cs" />
     <Compile Include="Store\DbDiskCache.cs" />
     <Compile Include="Store\FileRepository.cs" />

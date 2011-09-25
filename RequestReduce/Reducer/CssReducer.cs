@@ -4,15 +4,14 @@ using System.Text;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.Module;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Reducer
 {
-    public class CssReducer : HeadResourceReducerBase
+    public class CssReducer : HeadResourceReducerBase<CssResource>
     {
         private ISpriteManager spriteManager;
         private ICssImageTransformer cssImageTransformer;
-
-        public override ResourceType SupportedResourceType { get { return ResourceType.Css; } }
 
         public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder) : base(webClientWrapper, store, minifier, uriBuilder)
         {
@@ -35,7 +34,7 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
-            var cssContent = webClientWrapper.DownloadCssString(url);
+            string cssContent = webClientWrapper.DownloadString<CssResource>(url);
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }

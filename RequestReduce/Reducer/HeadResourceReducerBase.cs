@@ -4,17 +4,18 @@ using System.Text;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.Module;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Reducer
 {
-    public abstract class HeadResourceReducerBase : IReducer
+    public abstract class HeadResourceReducerBase<T> : IReducer where T : IResourceType, new()
     {
         protected readonly IWebClientWrapper webClientWrapper;
         private readonly IStore store;
         private IMinifier minifier;
         private readonly IUriBuilder uriBuilder;
 
-        public abstract ResourceType SupportedResourceType { get; }
+        public Type SupportedResourceType { get { return typeof(T); } }
 
         public HeadResourceReducerBase(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder)
         {
@@ -35,8 +36,8 @@ namespace RequestReduce.Reducer
             RRTracer.Trace("beginning reducing process for {0}", urls);
             var urlList = SplitUrls(urls);
             var processedResource = ProcessResource(key, urlList);
-            var bytes = Encoding.UTF8.GetBytes(minifier.Minify(processedResource, SupportedResourceType));
-            var virtualfileName = uriBuilder.BuildResourceUrl(key, bytes, SupportedResourceType);
+            var bytes = Encoding.UTF8.GetBytes(minifier.Minify<T>(processedResource));
+            var virtualfileName = uriBuilder.BuildResourceUrl<T>(key, bytes);
             store.Save(bytes, virtualfileName, urls);
             RRTracer.Trace("finishing reducing process for {0}", urls);
             return virtualfileName;

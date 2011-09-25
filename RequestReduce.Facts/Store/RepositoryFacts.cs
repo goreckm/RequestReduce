@@ -134,7 +134,7 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
 
-                var result = testable.ClassUnderTest.GetActiveCssFiles();
+                var result = testable.ClassUnderTest.GetActiveFiles();
 
                 Assert.Equal(2, result.Count());
                 Assert.True(result.Contains(file.FileName));
@@ -170,7 +170,7 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
 
-                var result = testable.ClassUnderTest.GetActiveCssFiles();
+                var result = testable.ClassUnderTest.GetActiveFiles();
 
                 Assert.Equal(1, result.Count());
                 Assert.True(result.Contains(file2.FileName));
@@ -225,7 +225,7 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Save(file3);
                 testable.ClassUnderTest.Save(file4);
 
-                var result = testable.ClassUnderTest.GetActiveCssFiles();
+                var result = testable.ClassUnderTest.GetActiveFiles();
 
                 Assert.Equal(2, result.Count());
                 Assert.True(result.Contains(file2.FileName));

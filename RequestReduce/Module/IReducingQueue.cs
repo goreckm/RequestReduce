@@ -4,8 +4,7 @@ namespace RequestReduce.Module
 {
     public interface IReducingQueue
     {
-        void EnqueueCss(string urls);
-        void EnqueueJavaScript(string urls);
+        void Enqueue(IQueueItem item);
         int Count { get; }
         void ClearFailures();
     }

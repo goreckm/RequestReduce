@@ -3,6 +3,7 @@ using System.Web;
 using Moq;
 using RequestReduce.Module;
 using Xunit;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Module
 {
@@ -182,7 +183,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.Transform(transform);
 
-                testable.Mock<IReducingQueue>().Verify(x => x.EnqueueCss("http://server/Me.css::http://server/Me2.css::"), Times.Once());
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(new QueueItem<CssResource> { Urls = "http://server/Me.css::http://server/Me2.css::" }), Times.Once());
             }
 
         }

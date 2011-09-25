@@ -4,6 +4,7 @@ using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using RequestReduce.Reducer;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Utilities
 {
@@ -28,9 +29,9 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = new byte[] {1};
 
-                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.Css);
+                var result = testable.ClassUnderTest.BuildResourceUrl<CssResource>(guid, content);
 
-                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), UriBuilder.CssFileName), result);
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), new CssResource().FileName), result);
             }
 
             [Fact]
@@ -42,9 +43,9 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
-                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.Css);
+                var result = testable.ClassUnderTest.BuildResourceUrl<CssResource>(guid, content);
 
-                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, UriBuilder.CssFileName), result);
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, new CssResource().FileName), result);
             }
 
             [Fact]
@@ -56,9 +57,9 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = new byte[] { 1 };
 
-                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.JavaScript);
+                var result = testable.ClassUnderTest.BuildResourceUrl<JavaScriptResource>(guid, content);
 
-                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), UriBuilder.JsFileName), result);
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), new JavaScriptResource().FileName), result);
             }
 
             [Fact]
@@ -70,9 +71,9 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
-                var result = testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.JavaScript);
+                var result = testable.ClassUnderTest.BuildResourceUrl<JavaScriptResource>(guid, content);
 
-                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, UriBuilder.JsFileName), result);
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, new JavaScriptResource().FileName), result);
             }
 
             [Fact]
@@ -84,7 +85,7 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
-                var result = Record.Exception(() => testable.ClassUnderTest.BuildResourceUrl(guid, content, ResourceType.Unknown)) as ArgumentException;
+                var result = Record.Exception(() => testable.ClassUnderTest.BuildResourceUrl(guid, content, typeof(Object))) as ArgumentException;
 
                 Assert.NotNull(result);
             }

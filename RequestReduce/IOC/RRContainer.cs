@@ -6,6 +6,7 @@ using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
 using StructureMap;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.IOC
 {
@@ -56,6 +57,7 @@ namespace RequestReduce.IOC
                                                         y.ExcludeNamespace("RequestReduce.Utilities");
                                                         y.ExcludeNamespace("RequestReduce.Configuration");
                                                         y.ExcludeNamespace("RequestReduce.Store");
+                                                        y.ExcludeNamespace("RequestReduce.ResourceTypes");
                                                         y.ExcludeType<IReductionRepository>();
                                                         y.ExcludeType<IReducingQueue>();
                                                         y.AddAllTypesOf<IReducer>();
@@ -67,6 +69,7 @@ namespace RequestReduce.IOC
                                                         y.Assembly("RequestReduce");
                                                         y.IncludeNamespace("RequestReduce.Utilities");
                                                         y.IncludeNamespace("RequestReduce.Configuration");
+                                                        y.AddAllTypesOf<IResourceType>();
                                                         y.With(new SingletonConvention());
                                                     }
                                              ));

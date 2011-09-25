@@ -9,6 +9,7 @@ using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using RequestReduce.Module;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -18,7 +19,7 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableJavaScriptReducer()
             {
-                Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>(), ResourceType.JavaScript)).Returns("minified");
+                Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>(It.IsAny<string>())).Returns("minified");
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
@@ -32,7 +33,7 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableJavaScriptReducer();
 
-                Assert.Equal(ResourceType.JavaScript, testable.ClassUnderTest.SupportedResourceType);
+                Assert.Equal(typeof(JavaScriptResource), testable.ClassUnderTest.SupportedResourceType);
             }
         }
 
@@ -83,7 +84,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
-                Assert.True(result.EndsWith("-" + UriBuilder.JsFileName));
+                Assert.True(result.EndsWith("-" + new JavaScriptResource().FileName));
             }
 
             [Fact]
@@ -93,17 +94,17 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
-                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadJavaScriptString("http://host/js1.js"), Times.Once());
-                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadJavaScriptString("http://host/js2.js"), Times.Once());
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<JavaScriptResource>("http://host/js1.js"), Times.Once());
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<JavaScriptResource>("http://host/js2.js"), Times.Once());
             }
 
             [Fact]
             public void WillSaveMinifiedAggregatedJS()
             {
                 var testable = new TestableJavaScriptReducer();
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadJavaScriptString("http://host/js1.js")).Returns("js1");
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadJavaScriptString("http://host/js1.js")).Returns("js2");
-                testable.Mock<IMinifier>().Setup(x => x.Minify("js1\njs2", ResourceType.JavaScript)).Returns("min");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<JavaScriptResource>("http://host/js1.js")).Returns("js1");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<JavaScriptResource>("http://host/js1.js")).Returns("js2");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("js1\njs2")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 

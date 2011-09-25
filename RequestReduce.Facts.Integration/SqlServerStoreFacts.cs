@@ -14,6 +14,7 @@ using RequestReduce.Utilities;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Integration
 {
@@ -179,7 +180,7 @@ namespace RequestReduce.Facts.Integration
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateCss();
             new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
-            var file = repo.AsQueryable().First(x => x.FileName.Contains(UriBuilder.CssFileName));
+            var file = repo.AsQueryable().First(x => x.FileName.Contains(new CssResource().FileName));
             file.IsExpired = false;
             var fileDate = file.LastUpdated;
             repo.Save(file);
@@ -190,7 +191,7 @@ namespace RequestReduce.Facts.Integration
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             var cssCount2 = cssPattern.Matches(response).Count;
-            file = repo.AsQueryable().First(x => x.FileName.Contains(UriBuilder.CssFileName));
+            file = repo.AsQueryable().First(x => x.FileName.Contains(new CssResource().FileName));
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
             Assert.Equal(fileDate, file.LastUpdated);
@@ -201,7 +202,7 @@ namespace RequestReduce.Facts.Integration
             const int timeout = 20000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(UriBuilder.CssFileName) && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(new CssResource().FileName) && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);

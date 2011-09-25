@@ -11,6 +11,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using nQuant;
 using Xunit;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Integration
 {
@@ -27,12 +28,12 @@ namespace RequestReduce.Facts.Integration
 
         private static IReducer GetCssReducer()
         {
-            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == ResourceType.Css);
+            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == typeof(CssResource));
         }
 
         private static IReducer GetJavaScriptReducer()
         {
-            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == ResourceType.JavaScript);
+            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == typeof(JavaScriptResource));
         }
 
 

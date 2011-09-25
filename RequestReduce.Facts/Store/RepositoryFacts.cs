@@ -8,6 +8,7 @@ using RequestReduce.Utilities;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using Xunit;
 using RequestReduce.Reducer;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Store
 {
@@ -95,7 +96,7 @@ namespace RequestReduce.Facts.Store
 
         }
 
-        public class GetActiveCssFiles
+        public class GetActiveFiles
         {
             [Fact]
             public void WillReturnListOfCssFiles()
@@ -107,7 +108,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id, new byte[] { 1 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 1 }),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -124,7 +125,7 @@ namespace RequestReduce.Facts.Store
                 var file3 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id2, new byte[] { 3 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id2, new byte[] { 3 }),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
@@ -151,7 +152,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id, new byte[] { 1 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 1 }),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -161,7 +162,7 @@ namespace RequestReduce.Facts.Store
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id2, new byte[] { 2 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id2, new byte[] { 2 }),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
@@ -186,7 +187,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id, new byte[] { 1 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 1 }),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -196,7 +197,7 @@ namespace RequestReduce.Facts.Store
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id, new byte[] { 2 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 2 }),
                     Key = id,
                     LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 2)),
                     OriginalName = "originalName2",
@@ -205,7 +206,7 @@ namespace RequestReduce.Facts.Store
                 var file3 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id, new byte[] { 3 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 3 }),
                     Key = id,
                     LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 3)),
                     OriginalName = "originalName2",
@@ -214,7 +215,7 @@ namespace RequestReduce.Facts.Store
                 var file4 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl(id, new byte[] { 4 }, ResourceType.Css),
+                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 4 }),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
@@ -245,7 +246,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = new CssResource().FileName,
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
@@ -254,7 +255,7 @@ namespace RequestReduce.Facts.Store
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = new CssResource().FileName,
                     Key = id,
                     LastUpdated = DateTime.Now,
                     RequestReduceFileId = Guid.NewGuid()
@@ -262,7 +263,7 @@ namespace RequestReduce.Facts.Store
                 var file3 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = new CssResource().FileName,
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
@@ -291,7 +292,7 @@ namespace RequestReduce.Facts.Store
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = "fileName1" + UriBuilder.CssFileName,
+                    FileName = "fileName1" + new CssResource().FileName,
                     Key = id,
                     LastUpdated = new DateTime(2010, 1, 1),
                     OriginalName = "originalName",
@@ -301,7 +302,7 @@ namespace RequestReduce.Facts.Store
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 2 },
-                    FileName = "fileName2" + UriBuilder.CssFileName,
+                    FileName = "fileName2" + new CssResource().FileName,
                     Key = Guid.NewGuid(),
                     LastUpdated = new DateTime(2011, 1, 1),
                     OriginalName = "originalName",
@@ -309,7 +310,7 @@ namespace RequestReduce.Facts.Store
                 };
                 testable.ClassUnderTest.Save(file2);
 
-                var result = testable.ClassUnderTest.GetActiveUrlByKey(id);
+                var result = testable.ClassUnderTest.GetActiveUrlByKey(id, typeof(CssResource));
 
                 Assert.Equal(file.FileName, result);
             }
@@ -323,7 +324,7 @@ namespace RequestReduce.Facts.Store
             var file = new RequestReduceFile()
             {
                 Content = new byte[] { 1 },
-                FileName = "fileName1" + UriBuilder.CssFileName,
+                FileName = "fileName1" + new CssResource().FileName,
                 Key = id,
                 LastUpdated = new DateTime(2010, 1, 1),
                 OriginalName = "originalName",
@@ -334,7 +335,7 @@ namespace RequestReduce.Facts.Store
             var file2 = new RequestReduceFile()
             {
                 Content = new byte[] { 2 },
-                FileName = "fileName2" + UriBuilder.CssFileName,
+                FileName = "fileName2" + new CssResource().FileName,
                 Key = id,
                 LastUpdated = new DateTime(2011, 1, 1),
                 OriginalName = "originalName",
@@ -342,7 +343,7 @@ namespace RequestReduce.Facts.Store
             };
             testable.ClassUnderTest.Save(file2);
 
-            var result = testable.ClassUnderTest.GetActiveUrlByKey(id);
+            var result = testable.ClassUnderTest.GetActiveUrlByKey(id, typeof(CssResource));
 
             Assert.Equal(file2.FileName, result);
         }

@@ -8,6 +8,7 @@ using RequestReduce.Utilities;
 using Xunit;
 using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
+using RequestReduce.IOC;
 
 namespace RequestReduce.Facts.Store
 {
@@ -204,16 +205,18 @@ namespace RequestReduce.Facts.Store
                 var guid2 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
                 var sig2 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid1, sig1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid2, sig2)).Returns("url2");
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file2")).Returns(guid2);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file2")).Returns(sig2);
+                var fileName1 = "1" + new CssResource().FileName;
+                var fileName2 = "2" + new CssResource().FileName;
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid2, sig2, typeof(CssResource))).Returns("url2");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(fileName1)).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(fileName2)).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName1)).Returns(sig1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName2)).Returns(sig2);
                 testable.Mock<IFileRepository>().Setup(x => x.GetActiveFiles()).Returns(new List<string>()
                                                         {
-                                                            "file1",
-                                                            "file2"
+                                                            fileName1,
+                                                            fileName2
                                                         });
 
                 var result = testable.ClassUnderTest.GetSavedUrls();
@@ -221,6 +224,7 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(2, result.Count);
                 Assert.True(result[guid1] == "url1");
                 Assert.True(result[guid2] == "url2");
+                RRContainer.Current = null;
             }
         }
 
@@ -266,16 +270,18 @@ namespace RequestReduce.Facts.Store
                 var guid2 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
                 var sig2 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid1, sig1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid2, sig2)).Returns("url2");
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file2")).Returns(guid2);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file2")).Returns(sig2);
+                var fileName1 = "1" + new CssResource().FileName;
+                var fileName2 = "2" + new CssResource().FileName;
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid2, sig2, typeof(CssResource))).Returns("url2");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(fileName1)).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(fileName2)).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName1)).Returns(sig1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName2)).Returns(sig2);
                 testable.Mock<IFileRepository>().Setup(x => x.GetActiveFiles()).Returns(new List<string>()
                                                         {
-                                                            "file1",
-                                                            "file2"
+                                                            fileName1,
+                                                            fileName2
                                                         });
                 var file1 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = guid1 };
                 var file2 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = guid2 };
@@ -292,6 +298,7 @@ namespace RequestReduce.Facts.Store
 
                 Assert.True(expire1);
                 Assert.True(expire2);
+                RRContainer.Current = null;
             }
         }
 

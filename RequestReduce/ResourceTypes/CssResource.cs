@@ -4,7 +4,7 @@ using System;
 
 namespace RequestReduce.ResourceTypes
 {
-    public struct CssResource : IResourceType
+    public class CssResource : IResourceType
     {
         private static readonly string cssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
         private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);

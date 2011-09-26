@@ -108,8 +108,9 @@ namespace RequestReduce.Store
 
         public string GetActiveUrlByKey(Guid key, Type resourceType)
         {
+            var fileName = (RRContainer.Current.GetInstance(resourceType) as IResourceType).FileName;
             return (from files in AsQueryable()
-                    where files.Key == key && !files.IsExpired && files.FileName.Contains((RRContainer.Current.GetInstance(resourceType) as IResourceType).FileName)
+                    where files.Key == key && !files.IsExpired && files.FileName.Contains(fileName)
                         select files.FileName).FirstOrDefault();
         }
     }

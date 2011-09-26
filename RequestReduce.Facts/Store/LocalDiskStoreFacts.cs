@@ -209,14 +209,14 @@ namespace RequestReduce.Facts.Store
                 var guid2 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
                 var sig2 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid1, sig1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid2, sig2)).Returns("url2");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid2, sig2, typeof(CssResource))).Returns("url2");
                 var files = new List<DatedFileEntry>
                                 {
                                     new DatedFileEntry(string.Format("dir\\{0}-Expired-{1}-{2}", guid1.RemoveDashes(), sig1, new CssResource().FileName), DateTime.Now),
                                     new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, new CssResource().FileName), DateTime.Now),
                                 };
-                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", string.Format("*{0}", new CssResource().FileName))).Returns(files);
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", "*RequestReduce*")).Returns(files);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].FileName.Replace("\\","/"))).Returns(guid1);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].FileName.Replace("\\", "/"))).Returns(guid2);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].FileName.Replace("\\", "/"))).Returns(sig1);
@@ -238,16 +238,16 @@ namespace RequestReduce.Facts.Store
                 var sig1 = Guid.NewGuid().RemoveDashes();
                 var sig2 = Guid.NewGuid().RemoveDashes();
                 var sig3 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid1, sig1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid2, sig2)).Returns("url2");
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid2, sig3)).Returns("url3");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid2, sig2, typeof(CssResource))).Returns("url2");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid2, sig3, typeof(CssResource))).Returns("url3");
                 var files = new List<DatedFileEntry>
                                 {
                                     new DatedFileEntry(string.Format("dir\\{0}-Expired-{1}-{2}", guid1.RemoveDashes(), sig1, new CssResource().FileName), DateTime.Now),
                                     new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, new CssResource().FileName), DateTime.Now),
 					                new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig3, new CssResource().FileName), DateTime.Now.Subtract(new TimeSpan(0,1,1)))
                                 };
-                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", string.Format("*{0}", new CssResource().FileName))).Returns(files);
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", "*RequestReduce*")).Returns(files);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].FileName.Replace("\\","/"))).Returns(guid1);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].FileName.Replace("\\", "/"))).Returns(guid2);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[2].FileName.Replace("\\", "/"))).Returns(guid2);
@@ -309,7 +309,7 @@ namespace RequestReduce.Facts.Store
                 testable.Inject<IUriBuilder>(urlBuilder);
                 var file1 = new DatedFileEntry(urlBuilder.BuildResourceUrl<CssResource>(guid1, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\'), DateTime.Now);
                 var file2 = new DatedFileEntry(urlBuilder.BuildResourceUrl<CssResource>(guid2, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\'), DateTime.Now);
-                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("c:\\web\\dir", string.Format("*{0}", new CssResource().FileName))).Returns(new List<DatedFileEntry> { file1, file2 });
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("c:\\web\\dir", "*RequestReduce*")).Returns(new List<DatedFileEntry> { file1, file2 });
                 testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\web\\dir")).Returns(new string[] { file1.FileName, file2.FileName });
 				
                 testable.ClassUnderTest.Flush(Guid.Empty);

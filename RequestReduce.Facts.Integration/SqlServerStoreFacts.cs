@@ -180,21 +180,25 @@ namespace RequestReduce.Facts.Integration
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateCss();
             new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
-            var file = repo.AsQueryable().First(x => x.FileName.Contains(new CssResource().FileName));
-            file.IsExpired = false;
-            var fileDate = file.LastUpdated;
-            repo.Save(file);
+            DateTime fileDate = DateTime.MinValue;
+            var files = repo.AsQueryable().Where(x => x.FileName.Contains("RequestReduce"));
+            foreach (var file in files)
+            {
+                file.IsExpired = false;
+                fileDate = file.LastUpdated;
+                repo.Save(file);
+            }
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var cssCount1 = cssPattern.Matches(response).Count;
-            Thread.Sleep(200);
+            Thread.Sleep(400);
 
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             var cssCount2 = cssPattern.Matches(response).Count;
-            file = repo.AsQueryable().First(x => x.FileName.Contains(new CssResource().FileName));
+            var file2 = repo.AsQueryable().First(x => x.FileName.Contains(".css"));
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
-            Assert.Equal(fileDate, file.LastUpdated);
+            Assert.Equal(fileDate, file2.LastUpdated);
         }
 
         private void WaitToCreateCss()
@@ -202,7 +206,7 @@ namespace RequestReduce.Facts.Integration
             const int timeout = 20000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(new CssResource().FileName) && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);

@@ -183,7 +183,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.Transform(transform);
 
-                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(new QueueItem<CssResource> { Urls = "http://server/Me.css::http://server/Me2.css::" }), Times.Once());
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css::http://server/Me2.css::")), Times.Once());
             }
 
         }

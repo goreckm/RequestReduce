@@ -46,6 +46,8 @@ namespace RequestReduce.Utilities
         public string BuildResourceUrl(Guid key, string signature, Type resourceType)
         {
             var resource = RRContainer.Current.GetInstance(resourceType) as IResourceType;
+            if (resource == null)
+                throw new ArgumentException("resourceType must derrive from IResourceType", "resourceType");
             return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, resource.FileName);
         }
 

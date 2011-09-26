@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace RequestReduce.ResourceTypes
 {
-    public struct JavaScriptResource : IResourceType
+    public class JavaScriptResource : IResourceType
     {
         private static readonly string scriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
         private static readonly Regex ScriptPattern = new Regex(@"<script[^>]+src=['""]?.*?['""]?[^>]+>\s*?(</script>)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);

@@ -20,6 +20,11 @@ namespace RequestReduce.IOC
             var initContainer = new StructureMap.Container();
             initContainer.Configure(x =>
                                         {
+                                            x.For<IResourceType>().OnCreationForAll((c, r) => 
+                                            { 
+                                                if (!r.FileName.Contains("RequestReduce")) 
+                                                    throw new System.InvalidOperationException ("ResourceType file names must contain the string 'RequestReduce'"); 
+                                            });
                                             x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                             x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                                             x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();

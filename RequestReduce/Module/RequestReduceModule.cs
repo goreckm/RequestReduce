@@ -108,7 +108,7 @@ namespace RequestReduce.Module
             if (context.Items.Contains(CONTEXT_KEY) || 
                 context.Response.ContentType != "text/html" || 
                 (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
-                config.CssProcesingDisabled ||
+                (config.CssProcesingDisabled && config.JavaScriptProcesingDisabled) ||
                 request.RawUrl == "/favicon.ico" || 
                 IsInRRContentDirectory(context))
                 return;

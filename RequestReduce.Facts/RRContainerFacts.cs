@@ -46,6 +46,7 @@ namespace RequestReduce.Facts
             var ex = Record.Exception(() => RRContainer.Current.AssertConfigurationIsValid());
 
             Assert.NotNull(ex);
+            RRContainer.Current = null;
         }
     }
 }

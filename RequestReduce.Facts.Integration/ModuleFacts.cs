@@ -41,7 +41,7 @@ namespace RequestReduce.Facts.Integration
         [OutputTraceOnFailFact]
         public void WillUseSameReductionAfterAppPoolRecycle()
         {
-            var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
@@ -60,17 +60,16 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
-        public void WillSetCacheHeadersOnContent()
+        public void WillSetCacheHeadersOnCssContent()
         {
-            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
-            var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
             string url;
             using (var client = new WebClient())
             {
                 client.DownloadString("http://localhost:8877/Local.html");
                 WaitToCreateResources();
                 var response = client.DownloadString("http://localhost:8877/Local.html");
-                var css = cssPattern.Match(response).ToString();
+                var css = new CssResource().ResourceRegex.Match(response).ToString();
                 url = urlPattern.Match(css).Groups["url"].Value;
             }
 
@@ -84,7 +83,30 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
-        public void WillReReduceCssAfterFileDeletion()
+        public void WillSetCacheHeadersOnJsContent()
+        {
+            var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            string url;
+            using (var client = new WebClient())
+            {
+                client.DownloadString("http://localhost:8877/Local.html");
+                WaitToCreateResources();
+                var response = client.DownloadString("http://localhost:8877/Local.html");
+                var js = new JavaScriptResource().ResourceRegex.Match(response).ToString();
+                url = urlPattern.Match(js).Groups["url"].Value;
+            }
+
+            var req = HttpWebRequest.Create("http://localhost:8877" + url);
+            var response2 = req.GetResponse();
+
+            Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
+            Assert.Equal("application/x-javascript", response2.ContentType);
+            Assert.Equal(uriBuilder.ParseSignature(url), response2.Headers["ETag"]);
+            response2.Close();
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillReReduceResourceAfterFileDeletion()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
             var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);

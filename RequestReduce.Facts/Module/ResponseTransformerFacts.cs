@@ -127,6 +127,35 @@ namespace RequestReduce.Facts.Module
                 Assert.Equal(transformed, result);
             }
 
+            [Fact]
+            public void WillNotTransformScriptsContainingIgnoredUrls()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
+<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/alsoignore/Me.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                var transformed = @"<head id=""Head1""><script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
+<meta name=""description"" content="""" />
+
+
+<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/alsoignore/Me.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+                testable.Mock<IRRConfiguration>().Setup(x => x.JavaScriptUrlsToIgnore).Returns("server/ignore,server/alsoignore");
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
 
             [Fact]
             public void WillTransformCombinationOfScriptsAndStylesheets()

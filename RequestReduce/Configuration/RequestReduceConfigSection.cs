@@ -143,5 +143,15 @@ namespace RequestReduce.Configuration
                 return limit;
             }
         }
+
+        [ConfigurationProperty("javascriptUrlsToIgnore")]
+        public string JavaScriptUrlsToIgnore
+        {
+            get
+            {
+                return base["javascriptUrlsToIgnore"].ToString();
+            }
+        }
+
     }
 }

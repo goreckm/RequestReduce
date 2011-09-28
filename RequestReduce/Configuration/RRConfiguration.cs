@@ -30,7 +30,8 @@ namespace RequestReduce.Configuration
         int SpriteColorLimit { get; set; }
         int StorePollInterval { get; set; }
         bool IsFullTrust { get; }
-        event Action PhysicalPathChange; 
+        event Action PhysicalPathChange;
+        string JavaScriptUrlsToIgnore { get; set; }
     }
 
     public class RRConfiguration : IRRConfiguration
@@ -68,6 +69,9 @@ namespace RequestReduce.Configuration
             SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);
+            JavaScriptUrlsToIgnore = config == null || string.IsNullOrWhiteSpace(config.JavaScriptUrlsToIgnore)
+                                    ? "ajax.googleapis.com/ajax/libs/jquery/,ajax.aspnetcdn.com/ajax/jQuery/"
+                                    : config.JavaScriptUrlsToIgnore;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if (config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
@@ -166,6 +170,9 @@ namespace RequestReduce.Configuration
 
             return AspNetHostingPermissionLevel.None;
         }
+
+
+        public string JavaScriptUrlsToIgnore { get; set; }
     }
 
     public static class ConfigExtensions

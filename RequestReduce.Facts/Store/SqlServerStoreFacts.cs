@@ -310,26 +310,21 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableSqlServerStore();
                 var guid1 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid1, sig1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
                 testable.Mock<IFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1, typeof(CssResource))).Returns("file1");
 
                 var result = testable.ClassUnderTest.GetUrlByKey(guid1, typeof(CssResource));
 
-                Assert.Equal("file1", result);
+                Assert.Equal("url1", result);
             }
 
             [Fact]
             public void WillGetNullFromStoreIfItDoesNotExists()
             {
                 var testable = new TestableSqlServerStore();
-                var guid1 = Guid.NewGuid();
-                var sig1 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(guid1, sig1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
-                testable.Mock<IFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1, typeof(CssResource))).Returns("file1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl<CssResource>(It.IsAny<Guid>(), It.IsAny<string>())).Returns("url1");
 
                 var result = testable.ClassUnderTest.GetUrlByKey(Guid.NewGuid(), typeof(CssResource));
 

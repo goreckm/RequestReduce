@@ -28,5 +28,11 @@ namespace RequestReduce.ResourceTypes
         {
             get { return CssPattern; }
         }
+
+
+        public Func<string, string, bool> TagValidator
+        {
+            get { return null; }
+        }
     }
 }

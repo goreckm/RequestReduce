@@ -25,6 +25,12 @@ namespace RequestReduce.Facts
 
             public System.Text.RegularExpressions.Regex ResourceRegex
             {
+                get { return null; }
+            }
+
+
+            public System.Func<string, string, bool> TagValidator
+            {
                 get { throw new System.NotImplementedException(); }
             }
         }

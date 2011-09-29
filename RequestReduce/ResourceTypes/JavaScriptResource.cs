@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using RequestReduce.Configuration;
+using RequestReduce.IOC;
 
 namespace RequestReduce.ResourceTypes
 {
@@ -28,5 +30,23 @@ namespace RequestReduce.ResourceTypes
             get { return ScriptPattern; }
         }
 
+
+
+        public System.Func<string, string, bool> TagValidator
+        {
+            get 
+            { 
+                return ((tag, url) => 
+                {
+                    var urlsToIgnore = RRContainer.Current.GetInstance<RRConfiguration>().JavaScriptUrlsToIgnore;
+                    foreach (var ignoredUrl in urlsToIgnore.Split(new char[]{','}, System.StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if(url.ToLower().Contains(ignoredUrl.ToLower()))
+                            return false;
+                    }
+                    return true;
+                }); 
+            }
+        }
     }
 }

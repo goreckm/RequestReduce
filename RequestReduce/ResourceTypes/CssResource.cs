@@ -30,9 +30,6 @@ namespace RequestReduce.ResourceTypes
         }
 
 
-        public Func<string, string, bool> TagValidator
-        {
-            get { return null; }
-        }
+        public Func<string, string, bool> TagValidator { get; set; }
     }
 }

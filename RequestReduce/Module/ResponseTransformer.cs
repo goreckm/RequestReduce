@@ -6,6 +6,7 @@ using System;
 using RequestReduce.ResourceTypes;
 using RequestReduce.Configuration;
 using System.Collections.Generic;
+using RequestReduce.IOC;
 
 namespace RequestReduce.Module
 {
@@ -38,9 +39,9 @@ namespace RequestReduce.Module
             return preTransform;
         }
 
-        private string Transform<T>(string preTransform) where T : IResourceType, new()
+        private string Transform<T>(string preTransform) where T : IResourceType
         {
-            var resource = new T();
+            var resource = RRContainer.Current.GetInstance<T>();
             var matches = resource.ResourceRegex.Matches(preTransform);
             if (matches.Count > 0)
             {
@@ -51,7 +52,7 @@ namespace RequestReduce.Module
                     var urlMatch = UrlPattern.Match(match.ToString());
                     if (urlMatch.Success)
                     {
-                        if (resource.TagValidator != null && resource.TagValidator(match.ToString(), urlMatch.Groups["url"].Value))
+                        if (resource.TagValidator == null || resource.TagValidator(match.ToString(), urlMatch.Groups["url"].Value))
                         {
                             urls.Append(RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value));
                             urls.Append("::");

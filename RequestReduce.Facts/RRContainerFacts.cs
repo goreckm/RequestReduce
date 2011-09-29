@@ -29,10 +29,7 @@ namespace RequestReduce.Facts
             }
 
 
-            public System.Func<string, string, bool> TagValidator
-            {
-                get { throw new System.NotImplementedException(); }
-            }
+            public System.Func<string, string, bool> TagValidator { get; set; }
         }
 
         [Fact]
